@@ -81,6 +81,8 @@ Equivale a:
 
 **Criterio de aprobación:** los tres pasan, sin excepciones ni `skip`.
 
+El mismo `npm run verify` corre en **GitHub Actions** en cada push a `main` y en cada pull request (`.github/workflows/verify.yml`). Si el CI falla, el cambio no está terminado.
+
 Si un test falla por un cambio de diseño, se actualiza el test **en el mismo commit** y se explica en el mensaje.
 
 ---

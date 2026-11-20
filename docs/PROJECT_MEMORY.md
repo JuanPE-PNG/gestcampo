@@ -251,12 +251,14 @@ npm run verify       # las tres anteriores, en orden
 
 ## 11. Bitácora
 
-### 2026-11-20 — Nombre definitivo y preparación de GitHub
+### 2026-11-20 — Nombre definitivo y GitHub
 
 - Se validó la app en el teléfono real: abre y navega correctamente.
 - Se definió el nombre **GestCampo** (libre en Google Play) y se aplicó en `app.json`, `package.json`, README, configuración y memoria.
 - Identificadores fijados: slug `gestcampo`, scheme `gestcampo`, package `com.gestcampo.app`.
-- Próximo paso: crear el repositorio remoto en GitHub y subir `main`.
+- Repositorio creado en GitHub: `JuanPE-PNG/gestcampo` (privado), vía SSH.
+- CI configurado: `.github/workflows/verify.yml` corre typecheck, lint y pruebas en cada push y PR.
+- Próximo paso: arrancar **F1 — spike del parser** con datos sintéticos.
 
 ### 2026-11-18 — Inicio del proyecto (F0)
 
