@@ -11,7 +11,7 @@
 Este archivo es la fuente de contexto entre sesiones. Si estás leyendo esto en un chat nuevo:
 
 1. **Leelo completo antes de escribir código.**
-2. Leé también `docs/WORKFLOW.md`: el flujo de trabajo y las pruebas son obligatorios.
+2. Leé también `docs/WORKFLOW.md`: el flujo de trabajo y las pruebas son obligatorios. Si el trabajo toca F6, leé `docs/CUENTAS_Y_BACKUPS.md`.
 3. Verificá el estado real con `git log --oneline -10` y `npm run verify`.
 4. **No implementes nada fuera del alcance congelado (§3)** sin que el dueño lo pida.
 5. Al terminar la sesión: actualizá §7 (roadmap), §8 (estado), §9 (deudas) y §11 (bitácora), y hacé commit.
@@ -30,13 +30,19 @@ Durante el día no tiene internet. Anota en el teléfono; cada anotación se gua
 
 **No usa computadora en ningún punto del flujo.** Todo termina en el teléfono.
 
+El producto se vende por **suscripción anual** a varios clientes. Cada cliente tiene su cuenta, creada por el administrador y asociada a un correo; la información queda aislada y cifrada por cuenta.
+
 ---
 
 ## 2. Restricciones del producto (no negociables)
 
 - **Android únicamente.** Desarrollo con Expo.
 - **Offline primero:** capturar e informar sin red. La red solo se necesita para sincronizar.
-- **Un solo usuario.** Sin multiusuario, sin roles, sin permisos.
+- **Una cuenta por cliente, un usuario por cuenta.** El sistema es multi-cliente: cada cliente ve solo sus datos. No hay varios usuarios dentro de una misma cuenta, ni roles, ni permisos.
+- **Suscripción anual** con fecha de vencimiento. Al vencer, **bloqueo total** de la app; el login sigue disponible para renovar y los datos no se borran.
+- **Cuentas creadas por el administrador**, asociadas a un correo, con autenticación obligatoria y datos cifrados por cuenta.
+- **Backups en el servidor**, con retención escalonada: 7 diarios + 4 semanales + 12 mensuales + 3 manuales.
+- **Un dispositivo por cuenta** (pendiente decidir si el segundo se bloquea o se transfiere).
 - **Una sola caja.** No se registra de dónde salió el dinero; solo importa el monto.
 - **Una sola moneda.**
 - **Un solo centro de costo:** la finca.
@@ -57,12 +63,12 @@ Durante el día no tiene internet. Anota en el teléfono; cada anotación se gua
 - Categorías dinámicas con “Otros” obligatoria.
 - Informes diario, semanal, mensual, anual y por período libre, en PDF.
 - **Exportación a Excel.**
-- Sincronización con nube, cuenta y respaldo (servidor + Drive).
+- Cuentas, suscripción anual, sincronización con nube y backups rotativos en el servidor.
 
 **No entra:**
 
 - iOS.
-- Multiusuario.
+- Multiusuario dentro de una misma cuenta (sí existe multi-cliente).
 - Presupuestos o alertas.
 - OCR de recibos.
 - Bot de WhatsApp.
@@ -136,6 +142,14 @@ Estado actual: solo existe la capa de UI (esqueleto) y dos piezas de dominio (`t
 | **informe** | id, tipo, desde, hasta, filtros, generadoEn, datosHash, archivo |
 | **outbox** | opId, entidad, entidadId, tipo, payload, estado, intentos, error |
 
+Entidades del servidor (F6), no locales:
+
+| Entidad | Campos esenciales |
+|---|---|
+| **cuenta** | id, email/teléfono, nombre, estado |
+| **suscripción** | cuentaId, plan, inicio, vence, estado, referencia de pago |
+| **backup** | id, cuentaId, creadoEn, motivo, ruta, bytes, hash |
+
 Estados:
 
 - **Ciclo:** `propuesto` → `revisado` · `anulado`.
@@ -180,7 +194,8 @@ Un gasto que no encaja en ninguna categoría **no queda sin clasificar**: va a
 | F3 | Gastos estructurados (parser, edición, historial, anulación) | Pendiente |
 | F4 | Días, categorías y flujo de revisión | Pendiente |
 | F5 | Informes PDF + exportación Excel | Pendiente |
-| F6 | Cuenta, nube, sincronización y respaldo | Pendiente |
+| F6.1 | Cuentas, autenticación, aislamiento por cuenta y sincronización | Pendiente |
+| F6.2 | Suscripción, bloqueo al vencer, backups escalonados y restauración | Pendiente |
 | F7 | Voz | Pendiente |
 | F8 | Endurecimiento, rendimiento y piloto | Pendiente |
 
@@ -274,6 +289,10 @@ npm run verify       # las tres anteriores, en orden
 - **Equipo:** se mantiene como texto libre (`Gasto.equipo`). Confirmar si alcanza o si hace falta catálogo.
 - **Package Android:** `com.gestcampo.app` (definido). No se puede cambiar después de publicar en Play Store.
 - **Backend:** Supabase no está creado. Hace falta cuenta, proyecto y claves (fase F6).
+- **Suscripción:** política definida: **bloqueo total al vencer**. La pasarela de pago queda fuera de alcance por ahora; la activación es manual.
+- **Backups:** definidos en `docs/CUENTAS_Y_BACKUPS.md`: en el servidor, 7 diarios + 4 semanales + 12 mensuales + 3 manuales.
+- **Dispositivo:** falta decidir si el segundo teléfono se bloquea o se transfiere.
+- **Cifrado:** en reposo por ahora; evaluar extremo a extremo más adelante.
 - **EAS:** no hay proyecto ni perfil de build configurado.
 - **Voz:** falta elegir librería y confirmar que requiere development build.
 - **Datos de prueba:** se van a generar sintéticos; no se usan datos reales.
@@ -293,6 +312,24 @@ npm run verify       # las tres anteriores, en orden
 ---
 
 ## 11. Bitácora
+
+### 2026-11-20 — Decisiones de cuentas, suscripción y backups
+
+- Retención escalonada: **7 diarios + 4 semanales + 12 mensuales + 3 manuales**.
+- Backups generados en el **servidor**, no en el teléfono.
+- Al vencer la suscripción: **bloqueo total** de la app; el login sigue para renovar y no se borran datos.
+- Cuentas **creadas por el administrador**, asociadas a un correo y con autenticación obligatoria.
+- **Un dispositivo por cuenta**, con la política del segundo teléfono aún por decidir.
+- Pago fuera de alcance por ahora; activación manual.
+- Diseño completo en `docs/CUENTAS_Y_BACKUPS.md`. F6 se parte en F6.1 y F6.2.
+
+### 2026-11-20 — Modelo comercial: cuentas, suscripción y backups
+
+- El proyecto deja de ser una app personal: se venderá por suscripción anual a varios clientes.
+- Una cuenta por cliente, un usuario por cuenta; los datos se aíslan por cuenta en el servidor.
+- Backup rotativo por cuenta: se conservan N copias y al agregar una nueva se elimina la más vieja.
+- Impacto: F6 crece (cuentas + suscripción + backups + restauración). F1–F5 no cambian.
+- Decisiones pendientes: retención y frecuencia de backups, política al vencer, pasarela de pago y método de autenticación.
 
 ### 2026-11-20 — F1, sesión 4: segmentación y concepto
 
