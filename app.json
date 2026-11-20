@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "Gastos de Finca",
-    "slug": "gastos-finca",
+    "name": "GestCampo",
+    "slug": "gestcampo",
     "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "gastosfinca",
+    "scheme": "gestcampo",
     "userInterfaceStyle": "light",
     "android": {
-      "package": "com.gastosfinca.app",
+      "package": "com.gestcampo.app",
       "adaptiveIcon": {
         "backgroundColor": "#14532D",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

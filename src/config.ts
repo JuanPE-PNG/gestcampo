@@ -7,7 +7,7 @@
  * - Un solo centro de costo: la finca.
  */
 
-export const APP_NAME = 'Gastos de Finca';
+export const APP_NAME = 'GestCampo';
 
 /**
  * Moneda única del sistema (ISO 4217).

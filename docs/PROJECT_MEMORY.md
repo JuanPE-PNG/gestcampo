@@ -1,6 +1,6 @@
-# Memoria del proyecto — Gastos de Finca
+# Memoria del proyecto — GestCampo
 
-> **Última actualización:** 2026-11-18
+> **Última actualización:** 2026-11-20
 > **Fase actual:** F0 — Fundaciones (en curso)
 > **Versión de la app:** 0.1.0
 
@@ -75,6 +75,8 @@ Durante el día no tiene internet. Anota en el teléfono; cada anotación se gua
 
 | Tema | Decisión |
 |---|---|
+| Nombre | **GestCampo** (tagline: “Tus cuentas del campo, al día”) |
+| Identificadores | slug `gestcampo` · scheme `gestcampo` · package `com.gestcampo.app` |
 | Framework | Expo SDK 58 + React Native + TypeScript |
 | Navegación | `expo-router` (4 pestañas) |
 | Base local | SQLite (`expo-sqlite`), con migraciones versionadas |
@@ -185,7 +187,7 @@ Hitos usables: **M1** al terminar F2 (bloc de notas), **M2** al terminar F4 (reg
 - [x] Bundle Android validado (`expo export`).
 - [x] Documentación del proyecto (`docs/`).
 - [x] `npm run verify` en verde (16 pruebas).
-- [ ] Probar en dispositivo Android real.
+- [x] Probada en dispositivo Android real.
 - [ ] Crear build de desarrollo (EAS o `expo run:android`).
 
 ---
@@ -227,7 +229,7 @@ npm run verify       # las tres anteriores, en orden
 
 - **Moneda:** se asumió `COP` en `src/config.ts`. Confirmar con el dueño.
 - **Equipo:** se mantiene como texto libre (`Gasto.equipo`). Confirmar si alcanza o si hace falta catálogo.
-- **Package Android:** `com.gastosfinca.app` es provisional; se puede cambiar antes de publicar.
+- **Package Android:** `com.gestcampo.app` (definido). No se puede cambiar después de publicar en Play Store.
 - **Backend:** Supabase no está creado. Hace falta cuenta, proyecto y claves (fase F6).
 - **EAS:** no hay proyecto ni perfil de build configurado.
 - **Voz:** falta elegir librería y confirmar que requiere development build.
@@ -248,6 +250,13 @@ npm run verify       # las tres anteriores, en orden
 ---
 
 ## 11. Bitácora
+
+### 2026-11-20 — Nombre definitivo y preparación de GitHub
+
+- Se validó la app en el teléfono real: abre y navega correctamente.
+- Se definió el nombre **GestCampo** (libre en Google Play) y se aplicó en `app.json`, `package.json`, README, configuración y memoria.
+- Identificadores fijados: slug `gestcampo`, scheme `gestcampo`, package `com.gestcampo.app`.
+- Próximo paso: crear el repositorio remoto en GitHub y subir `main`.
 
 ### 2026-11-18 — Inicio del proyecto (F0)
 

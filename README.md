@@ -1,6 +1,8 @@
-# Gastos de Finca
+# GestCampo
 
 Aplicación Android para registrar los gastos del día desde el campo, sin internet, y generar informes en PDF y Excel desde el teléfono.
+
+> Tus cuentas del campo, al día.
 
 Reemplaza el traspaso manual de notas de WhatsApp a Excel.
 
