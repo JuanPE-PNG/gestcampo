@@ -225,7 +225,8 @@ Sesiones definidas para el spike del parser:
 - [x] **2.** Corpus de desarrollo (120) y de reserva (50), con pruebas de integridad.
 - [x] **3.** Normalización y extracción de monto (100% en desarrollo).
 - [x] **4.** Segmentación, concepto, cantidad/unidad y equipo (100% en desarrollo).
-- [ ] **5.** Categorías, confianza y banderas de revisión.
+- [x] **5.** Categorías, confianza y banderas de revisión (100% en desarrollo).
+- [ ] **6.** Medición sobre reserva y adversarios, decisión y cierre.
 - [ ] **5.** Categorías, confianza y banderas de revisión.
 - [ ] **6.** Reporte final y decisión (`docs/DECISION_PARSER.md`).
 
@@ -240,6 +241,7 @@ src/domain/parser/corpus-desarrollo.ts  120 casos generados para ajustar reglas
 src/domain/parser/corpus-reserva.ts     50 casos generados, no se tocan hasta el cierre
 src/domain/parser/corpus.test.ts        pruebas de integridad del corpus
 src/domain/parser/parser.ts             motor: segmentación y concepto
+src/domain/parser/clasificar.ts         categorías por palabras clave + Otros/etiqueta
 src/domain/parser/medir-estructura.ts   medición de la estructura completa
 src/domain/parser/estructura-corpus.test.ts  umbral de calidad sobre desarrollo
 scripts/generar-corpus.mjs              generador reproducible (semilla fija)
@@ -258,7 +260,8 @@ scripts/generar-corpus.mjs              generador reproducible (semilla fija)
 - Pruebas de integridad del corpus (11 pruebas).
 - Normalización, números en palabras y extracción de montos, con medición (100% en el corpus de desarrollo).
 - Motor del parser: segmentación, concepto, cantidad/unidad, equipo y total por precio unitario (100% en desarrollo).
-- `npm run verify` ejecuta typecheck, lint y tests (68 pruebas).
+- Clasificación por categorías con regla de **Otros + etiqueta** y confianza por campo (150/150 ítems en desarrollo).
+- `npm run verify` ejecuta typecheck, lint y tests (83 pruebas).
 
 **No existe todavía:**
 
@@ -312,6 +315,15 @@ npm run verify       # las tres anteriores, en orden
 ---
 
 ## 11. Bitácora
+
+### 2026-11-20 — F1, sesión 5: categorías y confianza
+
+- `clasificar.ts`: reglas por palabras clave con prioridad (reparación > insumo), confianza 0.95 en coincidencia y 0.6 en respaldo.
+- Regla de **Otros + etiqueta** implementada: `2 kilos de arroz` → `otros` + `arroz`.
+- Banderas de revisión por monto ausente, concepto vacío, segmentación dudosa, monto ambiguo y categoría dudosa.
+- Medición en desarrollo: estructura 120/120, categorías 150/150.
+- Pruebas del proyecto: **83**.
+- Próximo paso: sesión 6 — medir reserva y adversarios, decidir enfoque y cerrar F1.
 
 ### 2026-11-20 — Decisiones de cuentas, suscripción y backups
 

@@ -49,6 +49,21 @@ describe('parsearMensaje', () => {
     expect(item.montoMenor).toBe(500_000);
     expect(item.concepto).toBe('arroz');
     expect(item.cantidad).toBe(2);
+    expect(item.categoriaId).toBe('otros');
+    expect(item.etiqueta).toBe('arroz');
+    expect(item.confianza.categoria).toBe(0.6);
+  });
+
+  it('clasifica un insumo sin etiqueta', () => {
+    const { item } = unico('aceite 45.000');
+    expect(item.categoriaId).toBe('insumos');
+    expect(item.etiqueta).toBeNull();
+    expect(item.confianza.categoria).toBe(0.95);
+  });
+
+  it('prioriza reparación sobre insumo', () => {
+    const { item } = unico('cambio de manguera 30.000');
+    expect(item.categoriaId).toBe('reparacion-maquinaria');
   });
 
   it('detecta el equipo al inicio', () => {

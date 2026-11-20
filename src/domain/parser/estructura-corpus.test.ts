@@ -24,4 +24,8 @@ describe('estructura del gasto (corpus de desarrollo)', () => {
 
     expect(resultado.exactitud).toBeGreaterThanOrEqual(0.9);
   });
+
+  it('clasifica correctamente al menos 95% de los ítems', () => {
+    expect(resultado.categorias.exactitud).toBeGreaterThanOrEqual(0.95);
+  });
 });

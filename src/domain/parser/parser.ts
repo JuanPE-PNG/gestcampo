@@ -16,6 +16,7 @@
 
 import type { BorradorGasto, MotivoRevision, ResultadoParseo } from './types';
 
+import { clasificarConcepto } from './clasificar';
 import { detectarMontos, MESES, UNIDADES, type MontoDetectado } from './monto';
 import { normalizar, tokenizar, type Token } from './normalizar';
 import { esPalabraNumerica } from './numeros';
@@ -278,19 +279,28 @@ function crearItem(
   if (montoMenor === null) motivos.add('sin-monto');
   if (!limpio.concepto) motivos.add('sin-concepto');
   if (dudoso) motivos.add('segmentacion-dudosa');
+  if (monto !== null && monto.confianza < 0.7) motivos.add('monto-ambiguo');
+
+  const sugerencia = limpio.concepto
+    ? clasificarConcepto(limpio.concepto)
+    : null;
+
+  if (sugerencia && sugerencia.confianza < 0.5) {
+    motivos.add('categoria-dudosa');
+  }
 
   return {
     montoMenor,
     concepto: limpio.concepto,
-    etiqueta: null,
-    categoriaId: null,
+    etiqueta: sugerencia?.etiqueta ?? null,
+    categoriaId: sugerencia?.categoriaId ?? null,
     equipo: equipo?.canonico ?? null,
     cantidad: limpio.cantidad,
     unidad: limpio.unidad,
     confianza: {
       monto: monto?.confianza ?? 0,
       concepto: limpio.concepto ? 0.85 : 0,
-      categoria: 0,
+      categoria: sugerencia?.confianza ?? 0,
     },
   };
 }
