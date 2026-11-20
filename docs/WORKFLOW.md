@@ -81,7 +81,7 @@ Equivale a:
 
 **Criterio de aprobación:** los tres pasan, sin excepciones ni `skip`.
 
-El mismo `npm run verify` corre en **GitHub Actions** en cada push a `main` y en cada pull request (`.github/workflows/verify.yml`). Si el CI falla, el cambio no está terminado.
+El mismo `npm run verify` corre en **GitHub Actions** en cada push, de cualquier rama, y en cada pull request (`.github/workflows/verify.yml`). Si el CI falla, el cambio no está terminado.
 
 Si un test falla por un cambio de diseño, se actualiza el test **en el mismo commit** y se explica en el mensaje.
 
@@ -134,6 +134,16 @@ De mayor a menor prioridad:
 
 **Regla:** ninguna lógica de negocio vive en un componente de pantalla. Si está en el dominio, se puede testear.
 
+### Regla de pruebas obligatorias
+
+**Todo cambio que agregue o modifique lógica de dominio debe incluir pruebas en el mismo commit.**
+
+- No se acepta código nuevo de dominio sin al menos un test que lo ejerza.
+- Todo bug se corrige con un test que falla antes y pasa después.
+- La cobertura no es la meta; el comportamiento sí.
+- Un cambio solo de documentación o de estilos no exige tests nuevos, pero `npm run verify` debe seguir en verde.
+- Si un test se vuelve obsoleto por un cambio de diseño, se actualiza en el mismo commit y se explica en el mensaje.
+
 ---
 
 ## 8. Definición de terminado
@@ -142,6 +152,7 @@ Un cambio está terminado cuando:
 
 - [ ] Cumple el criterio de aceptación de su fase (ver `PROJECT_MEMORY.md` §7).
 - [ ] `npm run verify` pasa.
+- [ ] Incluye pruebas nuevas o actualizadas si tocó lógica de dominio.
 - [ ] Se probó en el teléfono real, incluido el modo avión si aplica.
 - [ ] No rompe datos existentes (migraciones probadas).
 - [ ] La memoria del proyecto quedó actualizada.

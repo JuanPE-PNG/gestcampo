@@ -25,6 +25,8 @@ export type GastoEsperado = {
 export type CasoParser = {
   id: string;
   texto: string;
+  /** Plantilla que generó el caso (solo en el corpus generado). */
+  plantilla?: string;
   esperado: {
     items: GastoEsperado[];
     requiereRevision: boolean;

@@ -207,7 +207,7 @@ Hitos usables: **M1** al terminar F2 (bloc de notas), **M2** al terminar F4 (reg
 Sesiones definidas para el spike del parser:
 
 - [x] **1.** Contrato (`src/domain/parser/types.ts`) y 27 casos adversarios.
-- [ ] **2.** Corpus de desarrollo (~70%) y de reserva (~30%).
+- [x] **2.** Corpus de desarrollo (120) y de reserva (50), con pruebas de integridad.
 - [ ] **3.** Normalización y extracción de monto.
 - [ ] **4.** Segmentación, concepto, cantidad/unidad y equipo.
 - [ ] **5.** Categorías, confianza y banderas de revisión.
@@ -220,6 +220,10 @@ src/domain/parser/types.ts              contrato del parser
 src/domain/parser/categorias-prueba.ts   cinco categorías fijas del spike
 src/domain/parser/corpus-types.ts       tipos del corpus
 src/domain/parser/corpus-adversarios.ts 27 casos que rompen todo
+src/domain/parser/corpus-desarrollo.ts  120 casos generados para ajustar reglas
+src/domain/parser/corpus-reserva.ts     50 casos generados, no se tocan hasta el cierre
+src/domain/parser/corpus.test.ts        pruebas de integridad del corpus
+scripts/generar-corpus.mjs              generador reproducible (semilla fija)
 ```
 
 ---
@@ -231,7 +235,8 @@ src/domain/parser/corpus-adversarios.ts 27 casos que rompen todo
 - La app compila y navega entre las 4 pestañas.
 - Cada pantalla muestra su fase y lo que va a incluir.
 - `parsearMonto` / `formatearMonto` con pruebas unitarias.
-- Contrato del parser y 27 casos adversarios (sin motor todavía).
+- Contrato del parser, 27 casos adversarios y corpus generado (120 + 50).
+- Pruebas de integridad del corpus (11 pruebas).
 - `npm run verify` ejecuta typecheck, lint y tests.
 
 **No existe todavía:**
@@ -283,6 +288,16 @@ npm run verify       # las tres anteriores, en orden
 ---
 
 ## 11. Bitácora
+
+### 2026-11-20 — F1, sesión 2: corpus completo
+
+- Se agregó a `WORKFLOW.md` la regla de **pruebas obligatorias** para todo cambio de dominio.
+- El CI ahora corre en **cada push, de cualquier rama**, no solo en `main`.
+- Generador reproducible (`scripts/generar-corpus.mjs`, semilla fija) con 11 plantillas.
+- Corpus: 120 casos de desarrollo + 50 de reserva, con vocabulario distinto en la reserva.
+- 11 pruebas de integridad del corpus (ids, textos, montos, categorías, Otros con etiqueta, revisión).
+- Total de pruebas del proyecto: 27.
+- Próximo paso: sesión 3 — normalización y extracción de monto.
 
 ### 2026-11-20 — F1, sesión 1: contrato y casos adversarios
 
