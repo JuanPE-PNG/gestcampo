@@ -209,7 +209,8 @@ Sesiones definidas para el spike del parser:
 - [x] **1.** Contrato (`src/domain/parser/types.ts`) y 27 casos adversarios.
 - [x] **2.** Corpus de desarrollo (120) y de reserva (50), con pruebas de integridad.
 - [x] **3.** Normalización y extracción de monto (100% en desarrollo).
-- [ ] **4.** Segmentación, concepto, cantidad/unidad y equipo.
+- [x] **4.** Segmentación, concepto, cantidad/unidad y equipo (100% en desarrollo).
+- [ ] **5.** Categorías, confianza y banderas de revisión.
 - [ ] **5.** Categorías, confianza y banderas de revisión.
 - [ ] **6.** Reporte final y decisión (`docs/DECISION_PARSER.md`).
 
@@ -223,6 +224,9 @@ src/domain/parser/corpus-adversarios.ts 27 casos que rompen todo
 src/domain/parser/corpus-desarrollo.ts  120 casos generados para ajustar reglas
 src/domain/parser/corpus-reserva.ts     50 casos generados, no se tocan hasta el cierre
 src/domain/parser/corpus.test.ts        pruebas de integridad del corpus
+src/domain/parser/parser.ts             motor: segmentación y concepto
+src/domain/parser/medir-estructura.ts   medición de la estructura completa
+src/domain/parser/estructura-corpus.test.ts  umbral de calidad sobre desarrollo
 scripts/generar-corpus.mjs              generador reproducible (semilla fija)
 ```
 
@@ -238,13 +242,13 @@ scripts/generar-corpus.mjs              generador reproducible (semilla fija)
 - Contrato del parser, 27 casos adversarios y corpus generado (120 + 50).
 - Pruebas de integridad del corpus (11 pruebas).
 - Normalización, números en palabras y extracción de montos, con medición (100% en el corpus de desarrollo).
-- `npm run verify` ejecuta typecheck, lint y tests (57 pruebas).
+- Motor del parser: segmentación, concepto, cantidad/unidad, equipo y total por precio unitario (100% en desarrollo).
+- `npm run verify` ejecuta typecheck, lint y tests (68 pruebas).
 
 **No existe todavía:**
 
 - Base de datos local ni migraciones.
 - Persistencia de mensajes.
-- Motor del parser (en F1).
 - Categorías reales (las del spike son fijas).
 - Informes, PDF y Excel.
 - Sincronización, cuenta y respaldo.
@@ -289,6 +293,14 @@ npm run verify       # las tres anteriores, en orden
 ---
 
 ## 11. Bitácora
+
+### 2026-11-20 — F1, sesión 4: segmentación y concepto
+
+- `parser.ts`: parte el mensaje por comas, punto y coma y “y”, une fragmentos sin monto (notas de voz), limpia concepto, detecta cantidad/unidad y equipo, y calcula el total cuando el precio es unitario.
+- `medir-estructura.ts`: compara ítems, montos, conceptos, cantidades, unidades, equipos y bandera de revisión.
+- Resultado en desarrollo: **120/120 (100%)**, otra vez un piso por compartir plantillas; la reserva sigue sin medir.
+- Pruebas del proyecto: **68**.
+- Próximo paso: sesión 5 — categorías (incluida la regla de Otros con etiqueta), confianza y banderas de revisión.
 
 ### 2026-11-20 — F1, sesión 3: extracción de montos
 

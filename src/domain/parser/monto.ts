@@ -31,7 +31,7 @@ export type MontoDetectado = {
   esPrecioUnitario: boolean;
 };
 
-const MESES = new Set([
+export const MESES = new Set([
   'enero',
   'febrero',
   'marzo',
@@ -46,7 +46,7 @@ const MESES = new Set([
   'diciembre',
 ]);
 
-const UNIDADES = new Set([
+export const UNIDADES = new Set([
   'kilo',
   'kilos',
   'gramo',
