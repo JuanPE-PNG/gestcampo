@@ -208,7 +208,7 @@ Sesiones definidas para el spike del parser:
 
 - [x] **1.** Contrato (`src/domain/parser/types.ts`) y 27 casos adversarios.
 - [x] **2.** Corpus de desarrollo (120) y de reserva (50), con pruebas de integridad.
-- [ ] **3.** Normalización y extracción de monto.
+- [x] **3.** Normalización y extracción de monto (100% en desarrollo).
 - [ ] **4.** Segmentación, concepto, cantidad/unidad y equipo.
 - [ ] **5.** Categorías, confianza y banderas de revisión.
 - [ ] **6.** Reporte final y decisión (`docs/DECISION_PARSER.md`).
@@ -237,7 +237,8 @@ scripts/generar-corpus.mjs              generador reproducible (semilla fija)
 - `parsearMonto` / `formatearMonto` con pruebas unitarias.
 - Contrato del parser, 27 casos adversarios y corpus generado (120 + 50).
 - Pruebas de integridad del corpus (11 pruebas).
-- `npm run verify` ejecuta typecheck, lint y tests.
+- Normalización, números en palabras y extracción de montos, con medición (100% en el corpus de desarrollo).
+- `npm run verify` ejecuta typecheck, lint y tests (57 pruebas).
 
 **No existe todavía:**
 
@@ -288,6 +289,16 @@ npm run verify       # las tres anteriores, en orden
 ---
 
 ## 11. Bitácora
+
+### 2026-11-20 — F1, sesión 3: extracción de montos
+
+- `normalizar.ts`: minúsculas y sin tildes, conservando índices.
+- `numeros.ts`: números en palabras (“dos mil quinientos”, “cuarenta y cinco mil”, “medio millón”).
+- `monto.ts`: detección de montos con reglas para fechas, cantidades y precios unitarios.
+- `medir-montos.ts`: medición por caso y por plantilla.
+- Resultado en desarrollo: **120/120 (100%)**. Se toma como piso, no como prueba: el corpus de desarrollo comparte plantillas con las reglas. La prueba real es la reserva, al cierre.
+- Pruebas del proyecto: **57**.
+- Próximo paso: sesión 4 — segmentación, concepto, cantidad/unidad y equipo.
 
 ### 2026-11-20 — F1, sesión 2: corpus completo
 
