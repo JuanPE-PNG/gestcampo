@@ -1,7 +1,7 @@
 # Memoria del proyecto — GestCampo
 
 > **Última actualización:** 2026-11-20
-> **Fase actual:** F1 — Spike del parser (en curso)
+> **Fase actual:** F1 completada — próxima: F2 (captura offline)
 > **Versión de la app:** 0.1.0
 
 ---
@@ -11,7 +11,7 @@
 Este archivo es la fuente de contexto entre sesiones. Si estás leyendo esto en un chat nuevo:
 
 1. **Leelo completo antes de escribir código.**
-2. Leé también `docs/WORKFLOW.md`: el flujo de trabajo y las pruebas son obligatorios. Si el trabajo toca F6, leé `docs/CUENTAS_Y_BACKUPS.md`.
+2. Leé también `docs/WORKFLOW.md`: el flujo de trabajo y las pruebas son obligatorios. Si el trabajo toca F6, leé `docs/CUENTAS_Y_BACKUPS.md`; si toca el parser, `docs/DECISION_PARSER.md`.
 3. Verificá el estado real con `git log --oneline -10` y `npm run verify`.
 4. **No implementes nada fuera del alcance congelado (§3)** sin que el dueño lo pida.
 5. Al terminar la sesión: actualizá §7 (roadmap), §8 (estado), §9 (deudas) y §11 (bitácora), y hacé commit.
@@ -189,8 +189,8 @@ Un gasto que no encaja en ninguna categoría **no queda sin clasificar**: va a
 | Fase | Alcance | Estado |
 |---|---|---|
 | **F0** | Fundaciones: repo, Expo, estructura, tema, documentación, pruebas | Completada (queda build de desarrollo) |
-| F1 | Spike del parser con datos de prueba | **En curso** |
-| F2 | Captura offline (chat + persistencia) | Pendiente |
+| **F1** | Spike del parser con datos de prueba | **Completada** |
+| F2 | Captura offline (chat + persistencia) | Próxima |
 | F3 | Gastos estructurados (parser, edición, historial, anulación) | Pendiente |
 | F4 | Días, categorías y flujo de revisión | Pendiente |
 | F5 | Informes PDF + exportación Excel | Pendiente |
@@ -226,7 +226,18 @@ Sesiones definidas para el spike del parser:
 - [x] **3.** Normalización y extracción de monto (100% en desarrollo).
 - [x] **4.** Segmentación, concepto, cantidad/unidad y equipo (100% en desarrollo).
 - [x] **5.** Categorías, confianza y banderas de revisión (100% en desarrollo).
-- [ ] **6.** Medición sobre reserva y adversarios, decisión y cierre.
+- [x] **6.** Medición sobre reserva y adversarios, decisión y cierre.
+
+Resultados del cierre (detalle en `docs/DECISION_PARSER.md`):
+
+| Corpus | Estructura | Categorías | Montos |
+|---|---|---|---|
+| Desarrollo (120) | 100% | 100% | 100% |
+| Reserva (50) | 100% | 100% | 100% |
+| Adversarios (27) | 88.9% | 93.1% | 100% |
+| **Total (197)** | **98.5%** | **99.2%** | **100%** |
+
+Decisión: **parser por reglas, local, sin IA externa**. Los tres fallos adversarios (sinónimos, abreviatura “rep.” y cláusula sin monto) pasan a F3.
 - [ ] **5.** Categorías, confianza y banderas de revisión.
 - [ ] **6.** Reporte final y decisión (`docs/DECISION_PARSER.md`).
 
@@ -260,8 +271,9 @@ scripts/generar-corpus.mjs              generador reproducible (semilla fija)
 - Pruebas de integridad del corpus (11 pruebas).
 - Normalización, números en palabras y extracción de montos, con medición (100% en el corpus de desarrollo).
 - Motor del parser: segmentación, concepto, cantidad/unidad, equipo y total por precio unitario (100% en desarrollo).
-- Clasificación por categorías con regla de **Otros + etiqueta** y confianza por campo (150/150 ítems en desarrollo).
-- `npm run verify` ejecuta typecheck, lint y tests (83 pruebas).
+- Clasificación por categorías con regla de **Otros + etiqueta** y confianza por campo.
+- Evaluación final de F1 con reserva y adversarios, y decisión documentada en `docs/DECISION_PARSER.md`.
+- `npm run verify` ejecuta typecheck, lint y tests (90 pruebas).
 
 **No existe todavía:**
 
@@ -296,6 +308,7 @@ npm run verify       # las tres anteriores, en orden
 - **Backups:** definidos en `docs/CUENTAS_Y_BACKUPS.md`: en el servidor, 7 diarios + 4 semanales + 12 mensuales + 3 manuales.
 - **Dispositivo:** falta decidir si el segundo teléfono se bloquea o se transfiere.
 - **Cifrado:** en reposo por ahora; evaluar extremo a extremo más adelante.
+- **Parser (F3):** agregar sinónimos (“repuestos”), abreviaturas (“rep.”) y el caso de cláusula sin monto después de un separador. Ver `docs/DECISION_PARSER.md` §6.
 - **EAS:** no hay proyecto ni perfil de build configurado.
 - **Voz:** falta elegir librería y confirmar que requiere development build.
 - **Datos de prueba:** se van a generar sintéticos; no se usan datos reales.
@@ -315,6 +328,16 @@ npm run verify       # las tres anteriores, en orden
 ---
 
 ## 11. Bitácora
+
+### 2026-11-20 — F1, sesión 6: evaluación final y cierre
+
+- Reserva (50): estructura 100%, categorías 100%, montos 100%.
+- Adversarios (27): estructura 88.9%, categorías 93.1%, montos 100%.
+- Total (197): estructura 98.5%, categorías 99.2%, montos 100%.
+- **Decisión: parser por reglas, local, sin IA externa.** Documento: `docs/DECISION_PARSER.md`.
+- Tres fallos adversarios identificados y diferidos a F3: sinónimo “repuestos”, abreviatura “rep.” y cláusula sin monto.
+- Umbrales de regresión fijados en `evaluacion-final.test.ts`.
+- F1 cerrada; próxima fase: **F2 — captura offline**.
 
 ### 2026-11-20 — F1, sesión 5: categorías y confianza
 
