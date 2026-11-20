@@ -1,7 +1,7 @@
 # Memoria del proyecto — GestCampo
 
 > **Última actualización:** 2026-11-20
-> **Fase actual:** F0 — Fundaciones (en curso)
+> **Fase actual:** F1 — Spike del parser (en curso)
 > **Versión de la app:** 0.1.0
 
 ---
@@ -156,14 +156,26 @@ Los dos ejes son independientes. “Sincronizado” no significa “terminado”
 9. Cualquier día pasado se puede editar, sin excepciones.
 10. Todos los datos son exportables completos sin la app.
 
+### Regla de “Otros”
+
+Un gasto que no encaja en ninguna categoría **no queda sin clasificar**: va a
+`Otros` y se le asigna una **etiqueta** con el nombre exacto del gasto
+(ejemplo: `2 kilos de arroz por 5 mil` → categoría `Otros`, etiqueta `arroz`).
+
+- La etiqueta es texto libre, normalizado (minúsculas, sin tildes).
+- Sirve para agrupar los gastos de “Otros” en los informes.
+- Si una etiqueta se repite mucho, más adelante se podrá proponer crear una
+  categoría propia (fuera del alcance de F1).
+- `Otros` siempre existe y no se puede borrar.
+
 ---
 
 ## 7. Roadmap y estado
 
 | Fase | Alcance | Estado |
 |---|---|---|
-| **F0** | Fundaciones: repo, Expo, estructura, tema, documentación, pruebas | **En curso** |
-| F1 | Spike del parser con datos de prueba | Pendiente |
+| **F0** | Fundaciones: repo, Expo, estructura, tema, documentación, pruebas | Completada (queda build de desarrollo) |
+| F1 | Spike del parser con datos de prueba | **En curso** |
 | F2 | Captura offline (chat + persistencia) | Pendiente |
 | F3 | Gastos estructurados (parser, edición, historial, anulación) | Pendiente |
 | F4 | Días, categorías y flujo de revisión | Pendiente |
@@ -190,6 +202,26 @@ Hitos usables: **M1** al terminar F2 (bloc de notas), **M2** al terminar F4 (reg
 - [x] Probada en dispositivo Android real.
 - [ ] Crear build de desarrollo (EAS o `expo run:android`).
 
+### F1 en detalle
+
+Sesiones definidas para el spike del parser:
+
+- [x] **1.** Contrato (`src/domain/parser/types.ts`) y 27 casos adversarios.
+- [ ] **2.** Corpus de desarrollo (~70%) y de reserva (~30%).
+- [ ] **3.** Normalización y extracción de monto.
+- [ ] **4.** Segmentación, concepto, cantidad/unidad y equipo.
+- [ ] **5.** Categorías, confianza y banderas de revisión.
+- [ ] **6.** Reporte final y decisión (`docs/DECISION_PARSER.md`).
+
+Archivos creados en F1:
+
+```
+src/domain/parser/types.ts              contrato del parser
+src/domain/parser/categorias-prueba.ts   cinco categorías fijas del spike
+src/domain/parser/corpus-types.ts       tipos del corpus
+src/domain/parser/corpus-adversarios.ts 27 casos que rompen todo
+```
+
 ---
 
 ## 8. Estado actual del repositorio
@@ -199,14 +231,15 @@ Hitos usables: **M1** al terminar F2 (bloc de notas), **M2** al terminar F4 (reg
 - La app compila y navega entre las 4 pestañas.
 - Cada pantalla muestra su fase y lo que va a incluir.
 - `parsearMonto` / `formatearMonto` con pruebas unitarias.
+- Contrato del parser y 27 casos adversarios (sin motor todavía).
 - `npm run verify` ejecuta typecheck, lint y tests.
 
 **No existe todavía:**
 
 - Base de datos local ni migraciones.
 - Persistencia de mensajes.
-- Parser.
-- Categorías.
+- Motor del parser (en F1).
+- Categorías reales (las del spike son fijas).
 - Informes, PDF y Excel.
 - Sincronización, cuenta y respaldo.
 - Voz.
@@ -250,6 +283,14 @@ npm run verify       # las tres anteriores, en orden
 ---
 
 ## 11. Bitácora
+
+### 2026-11-20 — F1, sesión 1: contrato y casos adversarios
+
+- Se creó la rama `feat/f1-parser`.
+- Contrato del parser definido en `src/domain/parser/types.ts` (borradores, confianza por campo, motivos de revisión).
+- Regla de **Otros + etiqueta** incorporada al contrato y a la memoria.
+- 27 casos adversarios escritos a mano en `corpus-adversarios.ts` (montos en palabras, decimales, fechas, multi-ítem, voz, “otros”…).
+- Próximo paso: sesión 2 — generar corpus de desarrollo y de reserva.
 
 ### 2026-11-20 — Nombre definitivo y GitHub
 
