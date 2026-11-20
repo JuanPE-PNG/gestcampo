@@ -1,7 +1,7 @@
 # Memoria del proyecto — GestCampo
 
 > **Última actualización:** 2026-11-20
-> **Fase actual:** F0 — Fundaciones (en curso)
+> **Fase actual:** F1 completada — próxima: F2 (captura offline)
 > **Versión de la app:** 0.1.0
 
 ---
@@ -11,7 +11,7 @@
 Este archivo es la fuente de contexto entre sesiones. Si estás leyendo esto en un chat nuevo:
 
 1. **Leelo completo antes de escribir código.**
-2. Leé también `docs/WORKFLOW.md`: el flujo de trabajo y las pruebas son obligatorios.
+2. Leé también `docs/WORKFLOW.md`: el flujo de trabajo y las pruebas son obligatorios. Si el trabajo toca F6, leé `docs/CUENTAS_Y_BACKUPS.md`; si toca el parser, `docs/DECISION_PARSER.md`.
 3. Verificá el estado real con `git log --oneline -10` y `npm run verify`.
 4. **No implementes nada fuera del alcance congelado (§3)** sin que el dueño lo pida.
 5. Al terminar la sesión: actualizá §7 (roadmap), §8 (estado), §9 (deudas) y §11 (bitácora), y hacé commit.
@@ -30,13 +30,19 @@ Durante el día no tiene internet. Anota en el teléfono; cada anotación se gua
 
 **No usa computadora en ningún punto del flujo.** Todo termina en el teléfono.
 
+El producto se vende por **suscripción anual** a varios clientes. Cada cliente tiene su cuenta, creada por el administrador y asociada a un correo; la información queda aislada y cifrada por cuenta.
+
 ---
 
 ## 2. Restricciones del producto (no negociables)
 
 - **Android únicamente.** Desarrollo con Expo.
 - **Offline primero:** capturar e informar sin red. La red solo se necesita para sincronizar.
-- **Un solo usuario.** Sin multiusuario, sin roles, sin permisos.
+- **Una cuenta por cliente, un usuario por cuenta.** El sistema es multi-cliente: cada cliente ve solo sus datos. No hay varios usuarios dentro de una misma cuenta, ni roles, ni permisos.
+- **Suscripción anual** con fecha de vencimiento. Al vencer, **bloqueo total** de la app; el login sigue disponible para renovar y los datos no se borran.
+- **Cuentas creadas por el administrador**, asociadas a un correo, con autenticación obligatoria y datos cifrados por cuenta.
+- **Backups en el servidor**, con retención escalonada: 7 diarios + 4 semanales + 12 mensuales + 3 manuales.
+- **Un dispositivo por cuenta** (pendiente decidir si el segundo se bloquea o se transfiere).
 - **Una sola caja.** No se registra de dónde salió el dinero; solo importa el monto.
 - **Una sola moneda.**
 - **Un solo centro de costo:** la finca.
@@ -57,12 +63,12 @@ Durante el día no tiene internet. Anota en el teléfono; cada anotación se gua
 - Categorías dinámicas con “Otros” obligatoria.
 - Informes diario, semanal, mensual, anual y por período libre, en PDF.
 - **Exportación a Excel.**
-- Sincronización con nube, cuenta y respaldo (servidor + Drive).
+- Cuentas, suscripción anual, sincronización con nube y backups rotativos en el servidor.
 
 **No entra:**
 
 - iOS.
-- Multiusuario.
+- Multiusuario dentro de una misma cuenta (sí existe multi-cliente).
 - Presupuestos o alertas.
 - OCR de recibos.
 - Bot de WhatsApp.
@@ -136,6 +142,14 @@ Estado actual: solo existe la capa de UI (esqueleto) y dos piezas de dominio (`t
 | **informe** | id, tipo, desde, hasta, filtros, generadoEn, datosHash, archivo |
 | **outbox** | opId, entidad, entidadId, tipo, payload, estado, intentos, error |
 
+Entidades del servidor (F6), no locales:
+
+| Entidad | Campos esenciales |
+|---|---|
+| **cuenta** | id, email/teléfono, nombre, estado |
+| **suscripción** | cuentaId, plan, inicio, vence, estado, referencia de pago |
+| **backup** | id, cuentaId, creadoEn, motivo, ruta, bytes, hash |
+
 Estados:
 
 - **Ciclo:** `propuesto` → `revisado` · `anulado`.
@@ -156,19 +170,32 @@ Los dos ejes son independientes. “Sincronizado” no significa “terminado”
 9. Cualquier día pasado se puede editar, sin excepciones.
 10. Todos los datos son exportables completos sin la app.
 
+### Regla de “Otros”
+
+Un gasto que no encaja en ninguna categoría **no queda sin clasificar**: va a
+`Otros` y se le asigna una **etiqueta** con el nombre exacto del gasto
+(ejemplo: `2 kilos de arroz por 5 mil` → categoría `Otros`, etiqueta `arroz`).
+
+- La etiqueta es texto libre, normalizado (minúsculas, sin tildes).
+- Sirve para agrupar los gastos de “Otros” en los informes.
+- Si una etiqueta se repite mucho, más adelante se podrá proponer crear una
+  categoría propia (fuera del alcance de F1).
+- `Otros` siempre existe y no se puede borrar.
+
 ---
 
 ## 7. Roadmap y estado
 
 | Fase | Alcance | Estado |
 |---|---|---|
-| **F0** | Fundaciones: repo, Expo, estructura, tema, documentación, pruebas | **En curso** |
-| F1 | Spike del parser con datos de prueba | Pendiente |
-| F2 | Captura offline (chat + persistencia) | Pendiente |
+| **F0** | Fundaciones: repo, Expo, estructura, tema, documentación, pruebas | Completada (queda build de desarrollo) |
+| **F1** | Spike del parser con datos de prueba | **Completada** |
+| F2 | Captura offline (chat + persistencia) | Próxima |
 | F3 | Gastos estructurados (parser, edición, historial, anulación) | Pendiente |
 | F4 | Días, categorías y flujo de revisión | Pendiente |
 | F5 | Informes PDF + exportación Excel | Pendiente |
-| F6 | Cuenta, nube, sincronización y respaldo | Pendiente |
+| F6.1 | Cuentas, autenticación, aislamiento por cuenta y sincronización | Pendiente |
+| F6.2 | Suscripción, bloqueo al vencer, backups escalonados y restauración | Pendiente |
 | F7 | Voz | Pendiente |
 | F8 | Endurecimiento, rendimiento y piloto | Pendiente |
 
@@ -190,6 +217,47 @@ Hitos usables: **M1** al terminar F2 (bloc de notas), **M2** al terminar F4 (reg
 - [x] Probada en dispositivo Android real.
 - [ ] Crear build de desarrollo (EAS o `expo run:android`).
 
+### F1 en detalle
+
+Sesiones definidas para el spike del parser:
+
+- [x] **1.** Contrato (`src/domain/parser/types.ts`) y 27 casos adversarios.
+- [x] **2.** Corpus de desarrollo (120) y de reserva (50), con pruebas de integridad.
+- [x] **3.** Normalización y extracción de monto (100% en desarrollo).
+- [x] **4.** Segmentación, concepto, cantidad/unidad y equipo (100% en desarrollo).
+- [x] **5.** Categorías, confianza y banderas de revisión (100% en desarrollo).
+- [x] **6.** Medición sobre reserva y adversarios, decisión y cierre.
+
+Resultados del cierre (detalle en `docs/DECISION_PARSER.md`):
+
+| Corpus | Estructura | Categorías | Montos |
+|---|---|---|---|
+| Desarrollo (120) | 100% | 100% | 100% |
+| Reserva (50) | 100% | 100% | 100% |
+| Adversarios (27) | 88.9% | 93.1% | 100% |
+| **Total (197)** | **98.5%** | **99.2%** | **100%** |
+
+Decisión: **parser por reglas, local, sin IA externa**. Los tres fallos adversarios (sinónimos, abreviatura “rep.” y cláusula sin monto) pasan a F3.
+- [ ] **5.** Categorías, confianza y banderas de revisión.
+- [ ] **6.** Reporte final y decisión (`docs/DECISION_PARSER.md`).
+
+Archivos creados en F1:
+
+```
+src/domain/parser/types.ts              contrato del parser
+src/domain/parser/categorias-prueba.ts   cinco categorías fijas del spike
+src/domain/parser/corpus-types.ts       tipos del corpus
+src/domain/parser/corpus-adversarios.ts 27 casos que rompen todo
+src/domain/parser/corpus-desarrollo.ts  120 casos generados para ajustar reglas
+src/domain/parser/corpus-reserva.ts     50 casos generados, no se tocan hasta el cierre
+src/domain/parser/corpus.test.ts        pruebas de integridad del corpus
+src/domain/parser/parser.ts             motor: segmentación y concepto
+src/domain/parser/clasificar.ts         categorías por palabras clave + Otros/etiqueta
+src/domain/parser/medir-estructura.ts   medición de la estructura completa
+src/domain/parser/estructura-corpus.test.ts  umbral de calidad sobre desarrollo
+scripts/generar-corpus.mjs              generador reproducible (semilla fija)
+```
+
 ---
 
 ## 8. Estado actual del repositorio
@@ -199,14 +267,19 @@ Hitos usables: **M1** al terminar F2 (bloc de notas), **M2** al terminar F4 (reg
 - La app compila y navega entre las 4 pestañas.
 - Cada pantalla muestra su fase y lo que va a incluir.
 - `parsearMonto` / `formatearMonto` con pruebas unitarias.
-- `npm run verify` ejecuta typecheck, lint y tests.
+- Contrato del parser, 27 casos adversarios y corpus generado (120 + 50).
+- Pruebas de integridad del corpus (11 pruebas).
+- Normalización, números en palabras y extracción de montos, con medición (100% en el corpus de desarrollo).
+- Motor del parser: segmentación, concepto, cantidad/unidad, equipo y total por precio unitario (100% en desarrollo).
+- Clasificación por categorías con regla de **Otros + etiqueta** y confianza por campo.
+- Evaluación final de F1 con reserva y adversarios, y decisión documentada en `docs/DECISION_PARSER.md`.
+- `npm run verify` ejecuta typecheck, lint y tests (90 pruebas).
 
 **No existe todavía:**
 
 - Base de datos local ni migraciones.
 - Persistencia de mensajes.
-- Parser.
-- Categorías.
+- Categorías reales (las del spike son fijas).
 - Informes, PDF y Excel.
 - Sincronización, cuenta y respaldo.
 - Voz.
@@ -231,6 +304,11 @@ npm run verify       # las tres anteriores, en orden
 - **Equipo:** se mantiene como texto libre (`Gasto.equipo`). Confirmar si alcanza o si hace falta catálogo.
 - **Package Android:** `com.gestcampo.app` (definido). No se puede cambiar después de publicar en Play Store.
 - **Backend:** Supabase no está creado. Hace falta cuenta, proyecto y claves (fase F6).
+- **Suscripción:** política definida: **bloqueo total al vencer**. La pasarela de pago queda fuera de alcance por ahora; la activación es manual.
+- **Backups:** definidos en `docs/CUENTAS_Y_BACKUPS.md`: en el servidor, 7 diarios + 4 semanales + 12 mensuales + 3 manuales.
+- **Dispositivo:** falta decidir si el segundo teléfono se bloquea o se transfiere.
+- **Cifrado:** en reposo por ahora; evaluar extremo a extremo más adelante.
+- **Parser (F3):** agregar sinónimos (“repuestos”), abreviaturas (“rep.”) y el caso de cláusula sin monto después de un separador. Ver `docs/DECISION_PARSER.md` §6.
 - **EAS:** no hay proyecto ni perfil de build configurado.
 - **Voz:** falta elegir librería y confirmar que requiere development build.
 - **Datos de prueba:** se van a generar sintéticos; no se usan datos reales.
@@ -250,6 +328,79 @@ npm run verify       # las tres anteriores, en orden
 ---
 
 ## 11. Bitácora
+
+### 2026-11-20 — F1, sesión 6: evaluación final y cierre
+
+- Reserva (50): estructura 100%, categorías 100%, montos 100%.
+- Adversarios (27): estructura 88.9%, categorías 93.1%, montos 100%.
+- Total (197): estructura 98.5%, categorías 99.2%, montos 100%.
+- **Decisión: parser por reglas, local, sin IA externa.** Documento: `docs/DECISION_PARSER.md`.
+- Tres fallos adversarios identificados y diferidos a F3: sinónimo “repuestos”, abreviatura “rep.” y cláusula sin monto.
+- Umbrales de regresión fijados en `evaluacion-final.test.ts`.
+- F1 cerrada; próxima fase: **F2 — captura offline**.
+
+### 2026-11-20 — F1, sesión 5: categorías y confianza
+
+- `clasificar.ts`: reglas por palabras clave con prioridad (reparación > insumo), confianza 0.95 en coincidencia y 0.6 en respaldo.
+- Regla de **Otros + etiqueta** implementada: `2 kilos de arroz` → `otros` + `arroz`.
+- Banderas de revisión por monto ausente, concepto vacío, segmentación dudosa, monto ambiguo y categoría dudosa.
+- Medición en desarrollo: estructura 120/120, categorías 150/150.
+- Pruebas del proyecto: **83**.
+- Próximo paso: sesión 6 — medir reserva y adversarios, decidir enfoque y cerrar F1.
+
+### 2026-11-20 — Decisiones de cuentas, suscripción y backups
+
+- Retención escalonada: **7 diarios + 4 semanales + 12 mensuales + 3 manuales**.
+- Backups generados en el **servidor**, no en el teléfono.
+- Al vencer la suscripción: **bloqueo total** de la app; el login sigue para renovar y no se borran datos.
+- Cuentas **creadas por el administrador**, asociadas a un correo y con autenticación obligatoria.
+- **Un dispositivo por cuenta**, con la política del segundo teléfono aún por decidir.
+- Pago fuera de alcance por ahora; activación manual.
+- Diseño completo en `docs/CUENTAS_Y_BACKUPS.md`. F6 se parte en F6.1 y F6.2.
+
+### 2026-11-20 — Modelo comercial: cuentas, suscripción y backups
+
+- El proyecto deja de ser una app personal: se venderá por suscripción anual a varios clientes.
+- Una cuenta por cliente, un usuario por cuenta; los datos se aíslan por cuenta en el servidor.
+- Backup rotativo por cuenta: se conservan N copias y al agregar una nueva se elimina la más vieja.
+- Impacto: F6 crece (cuentas + suscripción + backups + restauración). F1–F5 no cambian.
+- Decisiones pendientes: retención y frecuencia de backups, política al vencer, pasarela de pago y método de autenticación.
+
+### 2026-11-20 — F1, sesión 4: segmentación y concepto
+
+- `parser.ts`: parte el mensaje por comas, punto y coma y “y”, une fragmentos sin monto (notas de voz), limpia concepto, detecta cantidad/unidad y equipo, y calcula el total cuando el precio es unitario.
+- `medir-estructura.ts`: compara ítems, montos, conceptos, cantidades, unidades, equipos y bandera de revisión.
+- Resultado en desarrollo: **120/120 (100%)**, otra vez un piso por compartir plantillas; la reserva sigue sin medir.
+- Pruebas del proyecto: **68**.
+- Próximo paso: sesión 5 — categorías (incluida la regla de Otros con etiqueta), confianza y banderas de revisión.
+
+### 2026-11-20 — F1, sesión 3: extracción de montos
+
+- `normalizar.ts`: minúsculas y sin tildes, conservando índices.
+- `numeros.ts`: números en palabras (“dos mil quinientos”, “cuarenta y cinco mil”, “medio millón”).
+- `monto.ts`: detección de montos con reglas para fechas, cantidades y precios unitarios.
+- `medir-montos.ts`: medición por caso y por plantilla.
+- Resultado en desarrollo: **120/120 (100%)**. Se toma como piso, no como prueba: el corpus de desarrollo comparte plantillas con las reglas. La prueba real es la reserva, al cierre.
+- Pruebas del proyecto: **57**.
+- Próximo paso: sesión 4 — segmentación, concepto, cantidad/unidad y equipo.
+
+### 2026-11-20 — F1, sesión 2: corpus completo
+
+- Se agregó a `WORKFLOW.md` la regla de **pruebas obligatorias** para todo cambio de dominio.
+- El CI ahora corre en **cada push, de cualquier rama**, no solo en `main`.
+- Generador reproducible (`scripts/generar-corpus.mjs`, semilla fija) con 11 plantillas.
+- Corpus: 120 casos de desarrollo + 50 de reserva, con vocabulario distinto en la reserva.
+- 11 pruebas de integridad del corpus (ids, textos, montos, categorías, Otros con etiqueta, revisión).
+- Total de pruebas del proyecto: 27.
+- Próximo paso: sesión 3 — normalización y extracción de monto.
+
+### 2026-11-20 — F1, sesión 1: contrato y casos adversarios
+
+- Se creó la rama `feat/f1-parser`.
+- Contrato del parser definido en `src/domain/parser/types.ts` (borradores, confianza por campo, motivos de revisión).
+- Regla de **Otros + etiqueta** incorporada al contrato y a la memoria.
+- 27 casos adversarios escritos a mano en `corpus-adversarios.ts` (montos en palabras, decimales, fechas, multi-ítem, voz, “otros”…).
+- Próximo paso: sesión 2 — generar corpus de desarrollo y de reserva.
 
 ### 2026-11-20 — Nombre definitivo y GitHub
 

@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
+    "corpus:generar": "node scripts/generar-corpus.mjs",
     "verify": "npm run typecheck && npm run lint && npm run test"
   },
   "dependencies": {
